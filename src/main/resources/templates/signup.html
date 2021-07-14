@@ -1,10 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
-<body>
-signup Page
+<body class="text-center">
+<form class="form-signin" th:action="@{/signup}" method="post" th:object="${userRequest}">
+    <h1 class="h3 mb-3 font-weight-normal">회원가입</h1>
+
+    <label for="username" class="sr-only">username</label>
+    <input type="text"
+           id="username"
+           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+           name="username"
+           class="form-control"
+           placeholder="id"
+           required
+           autofocus>
+    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+        아이디 중복
+    </div>
+    <label for="nickname" class="sr-only">nickname</label>
+    <input type="text"
+           id="nickname"
+           th:classappend="${#fields.hasErrors('nickname')} ? 'is-invalid'"
+           name="nickname"
+           class="form-control"
+           placeholder="nickname"
+           required
+           autofocus>
+    <div class="invalid-feedback" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">
+        닉네임 중복
+    </div>
+    <label for="password" class="sr-only">password</label>
+    <input type="password"
+           id="password"
+           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+           name="password"
+           class="form-control"
+           placeholder="password"
+           required>
+
+    <label for="password" class="sr-only">password_confirm</label>
+    <input type="password"
+           id="passwordConfirm"
+           name="passwordConfirm"
+           class="form-control"
+           placeholder="password confirm"
+           required>
+    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+        비밀번호 불일치
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+</form>
 </body>
 </html>
+
+
