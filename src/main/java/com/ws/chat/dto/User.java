@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +19,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
     private Long userId;
 
     @Column(unique = true)
@@ -27,4 +30,7 @@ public class User {
 
     @NotNull
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<ChatroomUser> chatroomUsers = new ArrayList<>();
 }
