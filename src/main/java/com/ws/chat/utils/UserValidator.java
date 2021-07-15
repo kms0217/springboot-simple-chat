@@ -22,8 +22,6 @@ public class UserValidator implements Validator {
     public void validate(Object target, Errors errors) {
         UserRequest userRequest = (UserRequest) target;
         if(!(userRequest.getPassword().equals(userRequest.getPasswordConfirm()))){
-            System.out.println(userRequest.getPassword());
-            System.out.println(userRequest.getPasswordConfirm());
             errors.rejectValue("password", "key","비밀번호가 일치하지 않습니다.");
         } else if(userRepository.findByUsername(userRequest.getUsername()) !=null){
             errors.rejectValue("username", "key","중복되는 ID가 존재합니다.");
