@@ -13,6 +13,8 @@
     <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
 </head>
 <body>
 <div id="app" class="container-fluid h-100">
@@ -20,13 +22,26 @@
         <div class="col-sm-3 h-100 bg-dark text-white">
             <div class="list-group list-group-flush w-100">
                 <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#add-chatroom-modal"> 채팅방 생성 </button>
-                <li class="" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId)">
+                <li class="bg-gradient" v-for="item in chatrooms" v-bind:key="item.chatroomId" v-on:click="enterRoom(item.chatroomId)" style="display: block; height: 50px">
                     {{item.roomName}}
                 </li>
             </div>
         </div>
-        <div class="col chat">
-            ChatRoom Message
+        <div class="col chat h-100" v-if="room.roomName" style="overflow-y: hidden;">
+            <div>
+                <h2>{{room.roomName}}</h2>
+            </div>
+
+            <ul class="list-group" id="chatMessages" style="overflow-y: scroll; max-height: 70%">
+                <li class="list-group-item" v-for="message in messages">
+                    {{message.user.nickname}} : {{message.content}}</a>
+                </li>
+            </ul>
+            <div class="input-group">
+                <input type="text" class="form-control" v-model="message" v-on:keypress.enter="sendMessage">
+                <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
+            </div>
+            <div></div>
         </div>
     </div>
     <!-- Modal -->
@@ -53,7 +68,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close-button" data-bs-dismiss="modal" aria-label="Close">Close</button>
-                    <button type="button" class="btn btn-primary create-button" @click="createRoom">Create</button>
+                    <button type="button" class="btn btn-primary create-button" data-bs-dismiss="modal" @click="createRoom">Create</button>
                 </div>
             </div>
         </div>
@@ -62,25 +77,102 @@
 
 
 <script type="text/javascript">
+    var sock;
+    var stomp;
+    var reconnect = 0;
+    var bottom_flag = true;
+    var pre_diffHeight = 0;
     var vm = new Vue({
         el: '#app',
         data: {
             roomName : '',
             roomPassword : '',
-            chatrooms: []
+            chatrooms: [],
+            roomId: '',
+            room: {},
+            message: '',
+            messages: []
         },
         created() {
             this.findAllRoom();
         },
         methods: {
             findAllRoom: function() {
-                axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+                axios.get('/chat/rooms').then(response => {
+                                                    this.chatrooms = response.data;
+                                              });
             },
             createRoom: function() {
-                alert(this.roomName + this.roomPassword);
+                if (this.roomName == "") {
+                    alert("방 이름을 입력하세요");
+                    return;
+                } else {
+                    var params = new URLSearchParams();
+                    params.append("roomName", this.roomName);
+                    params.append("roomPassword", this.roomPassword);
+                    axios.post('/chat/room', params).then(response=>{
+                                                            this.roomName = "";
+                                                            this.roomPassword = "";
+                                                            this.room = response.data;
+                                                            this.messages=[];
+                                                            this.roomId = response.data.chatroomId;
+                                                            this.findAllRoom();
+                                                            this.getMessages();
+                                                          }).catch( response=>{
+                                                                alert("채팅방 개설 실패");
+                                                         });
+                }
             },
             enterRoom: function(roomId) {
-                alert("enterRoom function");
+                this.roomId = roomId;
+                axios.get("/chat/room/enter/" + this.roomId).then(response=>{
+                                                                        this.room = response.data;
+                                                                        this.getMessages();
+                                                                        this.connect();
+                                                                  }).catch( response=>{
+                                                                        alert("채팅방 입장 실패");
+                                                                  });
+            },
+            getMessages: function() {
+                this.messages = [];
+                axios.get("/chat/room/" + this.roomId + "/messages").then(response=>{
+                                                                            this.messages = response.data;
+                                                                         }).catch( response=>{
+                                                                                alert("채팅방 입장 실패");
+                                                                         });
+            },
+            sendMessage: function() {
+                stomp.send("/pub/chat/message", {}, JSON.stringify({
+                                                           messageType:'CHAT',
+                                                           chatroom:this.room,
+                                                           content:this.message}));
+                this.message = '';
+            },
+            recvMessage: function(recv) {
+                this.messages.push(recv);
+                setTimeout(this.onScroll, 50);
+            },
+            onScroll: function() {
+                var objDiv = document.getElementById("chatMessages");
+                objDiv.scrollTop = objDiv.scrollHeight;
+            },
+            connect: function() {
+                try{
+                    stomp.disconnect();
+                }catch(e){
+                }
+                sock = new SockJS("/chat");
+                stomp = Stomp.over(sock);
+                stomp.connect({}, function() {
+                    stomp.subscribe("/sub/chat/room/" + vm.$data.roomId, function(message) {
+                        var recv = JSON.parse(message.body);
+                        vm.recvMessage(recv);
+                    });
+                stomp.send("/pub/chat/message", {}, JSON.stringify({
+                                                             messageType:'ENTER',
+                                                             chatroom:vm.$data.room
+                                                            }));
+                });
             }
         }
     });
