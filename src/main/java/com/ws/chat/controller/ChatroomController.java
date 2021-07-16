@@ -1,8 +1,15 @@
 package com.ws.chat.controller;
 
 import com.ws.chat.dto.Chatroom;
+import com.ws.chat.dto.ChatroomUser;
+import com.ws.chat.dto.Message;
+import com.ws.chat.dto.User;
 import com.ws.chat.repository.ChatroomRepository;
+import com.ws.chat.repository.ChatroomUserRepository;
+import com.ws.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +23,8 @@ import java.util.List;
 public class ChatroomController {
 
     private final ChatroomRepository chatroomRepository;
+    private final UserRepository userRepository;
+    private final ChatroomUserRepository chatroomUserRepository;
 
     @GetMapping("/room")
     public String chatPage(){
@@ -36,25 +45,36 @@ public class ChatroomController {
     @ResponseBody
     public Chatroom newRoom(@RequestParam String roomName,
                             @RequestParam(defaultValue = "false") boolean roomType,
-                            @RequestParam(defaultValue = "") String password){
+                            @RequestParam(defaultValue = "") String password
+    ){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = userRepository.findByUsername(authentication.getName());
+        ChatroomUser chatroomUser = new ChatroomUser();
         Chatroom chatroom = new Chatroom();
         chatroom.setRoomName(roomName);
-        if (!roomType){
+        if (roomType){
             chatroom.setChatroomType(true);
             chatroom.setChatRoomPassword(password);
         }
-        return chatroomRepository.save(chatroom);
+        chatroomRepository.save(chatroom);
+        chatroomUser.setChatroom(chatroom);
+        chatroomUser.setUser(user);
+        chatroomUser.setChatroomUserType(ChatroomUser.ChatroomUserType.OWNER);
+        chatroomUserRepository.save(chatroomUser);
+        return chatroom;
     }
 
     @GetMapping("/room/enter/{roomId}")
-    private String enterRoom(Model model, @PathVariable String roomId){
-        model.addAttribute("roomId", roomId);
-        return "chatroom";
+    @ResponseBody
+    private Chatroom enterRoom(Model model, @PathVariable Long roomId){
+        return chatroomRepository.findById(roomId).orElseThrow();
     }
 
-    @GetMapping("/room/{roomId}")
+    @GetMapping("/room/{roomId}/messages")
     @ResponseBody
-    public Chatroom findRoom(@PathVariable Long roomId){
-        return chatroomRepository.findById(roomId).orElseThrow();
+    public List<Message> allMessages(@PathVariable Long roomId){
+        Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
+        return chatroom.getMessages();
     }
 }
