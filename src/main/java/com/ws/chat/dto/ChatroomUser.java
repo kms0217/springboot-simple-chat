@@ -1,7 +1,6 @@
 package com.ws.chat.dto;
 
 import lombok.*;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
 
