@@ -21,7 +21,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(){
-        return "index";
+        return "redirect:/chat/room";
     }
 
     @GetMapping("/login")
