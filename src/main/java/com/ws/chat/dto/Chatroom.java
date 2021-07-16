@@ -1,10 +1,8 @@
 package com.ws.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
@@ -21,7 +19,7 @@ import java.util.Set;
 public class Chatroom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatroomId;
 
     private String roomName;
@@ -31,8 +29,16 @@ public class Chatroom {
     private String chatRoomPassword;
 
     @OneToMany(mappedBy = "chatroom")
-    private List<Message> messages;
+    @ToString.Exclude
+    @JsonIgnore
+    private List<Message> messages = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatroom")
-    private List<ChatroomUser> chatroomUserList = new ArrayList<>();
+    @ToString.Exclude
+    @JsonIgnore
+    private List<ChatroomUser> chatroomUsers = new ArrayList<>();
+
+    public void addChatroomUser(ChatroomUser chatroomUser){
+        chatroomUsers.add(chatroomUser);
+    }
 }

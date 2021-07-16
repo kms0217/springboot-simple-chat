@@ -1,10 +1,8 @@
 package com.ws.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -32,5 +30,11 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @JsonIgnore
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
+
+    public void addChatroomUser(ChatroomUser chatroomUser){
+        chatroomUsers.add(chatroomUser);
+    }
 }

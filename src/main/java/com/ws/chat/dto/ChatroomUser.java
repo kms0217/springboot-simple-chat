@@ -1,9 +1,6 @@
 package com.ws.chat.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
@@ -16,7 +13,7 @@ import javax.persistence.*;
 public class ChatroomUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatroomUserId;
 
     @ManyToOne
@@ -28,6 +25,16 @@ public class ChatroomUser {
     private Chatroom chatroom;
 
     private ChatroomUserType chatroomUserType;
+
+    public void setUser(User user){
+        this.user = user;
+        this.user.addChatroomUser(this);
+    }
+
+    public void setChatroom(Chatroom chatroom){
+        this.chatroom = chatroom;
+        this.chatroom.addChatroomUser(this);
+    }
 
     public static enum ChatroomUserType{
         OWNER,
