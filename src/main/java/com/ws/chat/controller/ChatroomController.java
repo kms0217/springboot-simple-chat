@@ -4,11 +4,15 @@ import com.ws.chat.dto.Chatroom;
 import com.ws.chat.dto.Message;
 import com.ws.chat.service.ChatroomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,9 +44,7 @@ public class ChatroomController {
 
     @GetMapping("/room/enter/{roomId}")
     @ResponseBody
-    private Chatroom enterRoom(@PathVariable Long roomId, Principal principal){
-        if (principal == null || principal.getName() == null)
-            return null;
+    public Chatroom enterRoom(@PathVariable Long roomId, Principal principal){
         return chatroomService.enterUser(principal.getName(), roomId);
     }
 
@@ -50,5 +52,15 @@ public class ChatroomController {
     @ResponseBody
     public List<Message> allMessages(@PathVariable Long roomId){
         return chatroomService.allMessages(roomId);
+    }
+
+    @GetMapping("/room/joined/{roomId}")
+    @ResponseBody
+    public boolean checkJoin(@PathVariable Long roomId, Principal principal){
+        if (chatroomService.checkUser(principal.getName(), roomId)){
+            return true;
+        } else{
+            return false;
+        }
     }
 }

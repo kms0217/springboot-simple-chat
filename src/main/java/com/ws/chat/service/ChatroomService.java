@@ -80,4 +80,13 @@ public class ChatroomService {
         }
         return chatrooms;
     }
+
+    public boolean checkUser(String userName, Long roomId) {
+        User user = userService.getUserWithName(userName);
+        Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
+        Optional byUserAndChatRoom = chatroomUserRepository.findByUserAndChatroom(user, chatroom);
+        if (byUserAndChatRoom.isPresent())
+            return true;
+        return false;
+    }
 }
