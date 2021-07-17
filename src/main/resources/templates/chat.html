@@ -99,6 +99,8 @@
 <script type="text/javascript">
     var sock;
     var stomp;
+    var sock_signal = new SockJS('/signal');
+    var stomp_signal = Stomp.over(sock_signal);
     var vm = new Vue({
         el: '#app',
         data: {
@@ -114,6 +116,12 @@
         },
         created() {
             this.findAllRoom();
+            stomp_signal.connect({}, function() {
+                stomp_signal.subscribe("/sub/signal", function(message) {
+                    var recv = JSON.parse(message.body);
+                    vm.recvSignal(recv);
+                });
+            });
         },
         methods: {
             findAllRoom: function() {
@@ -192,7 +200,8 @@
                 setTimeout(this.onScroll, 50);
             },
             recvSignal: function(recv) {
-                alert(recv);
+                if (recv.msg == "createRoom")
+                    this.findAllRoom();
             },
             onScroll: function() {
                 var objDiv = document.getElementById("chatMessages");

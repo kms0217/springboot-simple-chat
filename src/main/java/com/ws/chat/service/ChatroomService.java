@@ -6,6 +6,7 @@ import com.ws.chat.dto.Message;
 import com.ws.chat.dto.User;
 import com.ws.chat.repository.ChatroomRepository;
 import com.ws.chat.repository.ChatroomUserRepository;
+import com.ws.chat.utils.SignalSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ChatroomService {
     private final ChatroomUserRepository chatroomUserRepository;
     private final ChatRoomUserService chatRoomUserService;
     private final MessageService messageService;
-
+    private final SignalSender signalSender;
 
     public List<Message> allMessages(Long chatroomId){
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow();
@@ -49,8 +50,8 @@ public class ChatroomService {
         chatroomUser.setChatroom(chatroom);
         chatroomUser.setUser(user);
         chatroomUser.setChatroomUserType(ChatroomUser.ChatroomUserType.OWNER);
-
         chatroomUserRepository.save(chatroomUser);
+        signalSender.send("createRoom");
         return chatroom;
     }
 
