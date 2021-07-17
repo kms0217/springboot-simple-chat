@@ -4,6 +4,7 @@ import com.ws.chat.dto.User;
 import com.ws.chat.dto.UserRequest;
 import com.ws.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Configurable
 public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
@@ -43,5 +45,13 @@ public class UserService implements UserDetailsService {
         user.setNickname(userRequest.getNickname());
         user.setPassword(encoder.encode(userRequest.getPassword()));
         return repository.save(user);
+    }
+
+    public User getUserWithName(String userName){
+        return repository.findByUsername(userName);
+    }
+
+    public User getUserWithNickName(String nickname){
+        return repository.findByNickname(nickname);
     }
 }
