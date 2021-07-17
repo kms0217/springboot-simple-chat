@@ -6,8 +6,10 @@ import com.ws.chat.dto.Message;
 import com.ws.chat.dto.User;
 import com.ws.chat.repository.ChatroomRepository;
 import com.ws.chat.repository.ChatroomUserRepository;
+import com.ws.chat.repository.MessageRepository;
 import com.ws.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class ChatroomController {
     private final ChatroomRepository chatroomRepository;
     private final UserRepository userRepository;
     private final ChatroomUserRepository chatroomUserRepository;
+    private final SimpMessageSendingOperations messageSendingOperations;
+    private final MessageRepository messageRepository;
 
     @GetMapping("/room")
     public String chatPage(){
@@ -80,10 +85,24 @@ public class ChatroomController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName());
         Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
+        Optional byUserAndChatRoom = chatroomUserRepository.findByUserAndChatroom(user, chatroom);
+        if (byUserAndChatRoom.isPresent()){
+            return chatroom;
+        }
         ChatroomUser chatroomUser = new ChatroomUser();
         chatroomUser.setChatroom(chatroom);
         chatroomUser.setUser(user);
         chatroomUserRepository.save(chatroomUser);
+
+        Message message = new Message();
+        message.setContent(user.getNickname() + " 입장!");
+        message.setUser(user);
+        message.setChatroom(chatroom);
+        message.setMessageType(Message.MessageType.ENTER);
+        messageRepository.save(message);
+        messageSendingOperations.convertAndSend(
+                "/sub/chat/room/" + chatroom.getChatroomId(), message
+        );
         return chatroom;
     }
 
