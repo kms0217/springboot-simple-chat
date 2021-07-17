@@ -34,7 +34,18 @@ public class Chatroom {
     @JsonIgnore
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
 
+    @Transient
+    private boolean joined;
+
     public void addChatroomUser(ChatroomUser chatroomUser){
         chatroomUsers.add(chatroomUser);
+    }
+
+    public void setJoined(boolean joined){
+        this.joined = joined;
+    }
+
+    public boolean getJoined(){
+        return joined;
     }
 }

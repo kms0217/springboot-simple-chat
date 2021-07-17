@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -38,6 +39,14 @@ public class ChatroomController {
         if(chatrooms == null){
             return new ArrayList<>();
         }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(authentication.getName());
+        List<ChatroomUser> chatroomUsers = chatroomUserRepository.findByUser(user);
+        for (Chatroom chatroom : chatrooms){
+            if (!Collections.disjoint(chatroom.getChatroomUsers(), chatroomUsers)){
+                chatroom.setJoined(true);
+            }
+        }
         return chatrooms;
     }
 
@@ -48,8 +57,8 @@ public class ChatroomController {
                             @RequestParam(defaultValue = "") String password
     ){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         User user = userRepository.findByUsername(authentication.getName());
+
         ChatroomUser chatroomUser = new ChatroomUser();
         Chatroom chatroom = new Chatroom();
         chatroom.setRoomName(roomName);
@@ -68,7 +77,14 @@ public class ChatroomController {
     @GetMapping("/room/enter/{roomId}")
     @ResponseBody
     private Chatroom enterRoom(Model model, @PathVariable Long roomId){
-        return chatroomRepository.findById(roomId).orElseThrow();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(authentication.getName());
+        Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
+        ChatroomUser chatroomUser = new ChatroomUser();
+        chatroomUser.setChatroom(chatroom);
+        chatroomUser.setUser(user);
+        chatroomUserRepository.save(chatroomUser);
+        return chatroom;
     }
 
     @GetMapping("/room/{roomId}/messages")
