@@ -15,6 +15,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-context-menu@2.0.6/vue-context-menu.min.js"></script>
 </head>
 <body>
 <div id="app" class="container-fluid h-100">
@@ -23,7 +24,8 @@
             <div class="list-group list-group-flush w-100">
                 <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#add-chatroom-modal"> 채팅방 생성 </button>
                 <li class="bg-gradient" v-for="item in chatrooms" v-bind:key="item.chatroomId" v-on:click="enterRoom(item.chatroomId)" style="display: block; height: 50px">
-                    {{item.roomName}}  : {{item.joined}}
+                    <p class="chatroom-box" style="width: 80%; float: left;">{{item.roomName}}</p>
+                    <p class="chatroom-box" style="width: 20%; float: right;" v-if="item.joined">참가중</p>
                 </li>
             </div>
         </div>
@@ -80,8 +82,6 @@
     var sock;
     var stomp;
     var reconnect = 0;
-    var bottom_flag = true;
-    var pre_diffHeight = 0;
     var vm = new Vue({
         el: '#app',
         data: {
