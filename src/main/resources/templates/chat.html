@@ -23,7 +23,7 @@
             <div class="list-group list-group-flush w-100">
                 <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#add-chatroom-modal"> 채팅방 생성 </button>
                 <li class="bg-gradient" v-for="item in chatrooms" v-bind:key="item.chatroomId" v-on:click="enterRoom(item.chatroomId)" style="display: block; height: 50px">
-                    {{item.roomName}}
+                    {{item.roomName}}  : {{item.joined}}
                 </li>
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <h2>{{room.roomName}}</h2>
             </div>
 
-            <ul class="list-group" id="chatMessages" style="overflow-y: scroll; max-height: 70%">
+            <ul class="list-group" id="chatMessages" style="overflow-y: scroll; min-height: 70%; max-height: 70%">
                 <li class="list-group-item" v-for="message in messages">
                     {{message.user.nickname}} : {{message.content}}</a>
                 </li>
@@ -127,13 +127,14 @@
                 this.roomId = roomId;
                 axios.get("/chat/room/enter/" + this.roomId).then(response=>{
                                                                         this.room = response.data;
+                                                                        this.findAllRoom();
                                                                         this.getMessages();
-                                                                        this.connect();
                                                                   }).catch( response=>{
                                                                         alert("채팅방 입장 실패");
                                                                   });
             },
             getMessages: function() {
+                this.connect();
                 this.messages = [];
                 axios.get("/chat/room/" + this.roomId + "/messages").then(response=>{
                                                                             this.messages = response.data;
