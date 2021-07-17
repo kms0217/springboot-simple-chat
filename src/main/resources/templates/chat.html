@@ -169,10 +169,6 @@
                         var recv = JSON.parse(message.body);
                         vm.recvMessage(recv);
                     });
-                stomp.send("/pub/chat/message", {}, JSON.stringify({
-                                                             messageType:'ENTER',
-                                                             chatroom:vm.$data.room
-                                                            }));
                 });
             }
         }
