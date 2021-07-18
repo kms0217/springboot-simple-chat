@@ -27,11 +27,13 @@ public class Chatroom {
     @OneToMany(mappedBy = "chatroom")
     @ToString.Exclude
     @JsonIgnore
+    @Builder.Default
     private List<Message> messages = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatroom")
     @ToString.Exclude
     @JsonIgnore
+    @Builder.Default
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
 
     @Transient

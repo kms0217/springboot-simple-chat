@@ -27,11 +27,13 @@ public class User {
     private String nickname;
 
     @NotNull
+    @JsonIgnore
     private String password;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
     @JsonIgnore
+    @Builder.Default
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
 
     public void addChatroomUser(ChatroomUser chatroomUser){
