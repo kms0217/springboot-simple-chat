@@ -1,4 +1,4 @@
-package com.ws.chat.dto;
+package com.ws.chat.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;

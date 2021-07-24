@@ -1,4 +1,4 @@
-package com.ws.chat.dto;
+package com.ws.chat.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

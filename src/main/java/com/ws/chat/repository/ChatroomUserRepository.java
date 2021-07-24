@@ -1,8 +1,8 @@
 package com.ws.chat.repository;
 
-import com.ws.chat.dto.Chatroom;
-import com.ws.chat.dto.ChatroomUser;
-import com.ws.chat.dto.User;
+import com.ws.chat.domain.Chatroom;
+import com.ws.chat.domain.ChatroomUser;
+import com.ws.chat.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

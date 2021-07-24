@@ -1,6 +1,6 @@
 package com.ws.chat.service;
 
-import com.ws.chat.dto.User;
+import com.ws.chat.domain.User;
 import com.ws.chat.dto.UserRequest;
 import com.ws.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.ws.chat.controller;
 
-import com.ws.chat.dto.Chatroom;
-import com.ws.chat.dto.Message;
+import com.ws.chat.domain.Chatroom;
+import com.ws.chat.domain.Message;
 import com.ws.chat.service.ChatroomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

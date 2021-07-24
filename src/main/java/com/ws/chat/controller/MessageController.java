@@ -1,6 +1,6 @@
 package com.ws.chat.controller;
 
-import com.ws.chat.dto.Message;
+import com.ws.chat.domain.Message;
 import com.ws.chat.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;

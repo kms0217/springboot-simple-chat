@@ -1,9 +1,9 @@
 package com.ws.chat.service;
 
-import com.ws.chat.dto.Chatroom;
-import com.ws.chat.dto.ChatroomUser;
-import com.ws.chat.dto.Message;
-import com.ws.chat.dto.User;
+import com.ws.chat.domain.Chatroom;
+import com.ws.chat.domain.ChatroomUser;
+import com.ws.chat.domain.Message;
+import com.ws.chat.domain.User;
 import com.ws.chat.repository.ChatroomRepository;
 import com.ws.chat.repository.ChatroomUserRepository;
 import com.ws.chat.utils.SignalSender;
