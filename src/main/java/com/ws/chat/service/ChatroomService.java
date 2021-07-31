@@ -11,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +29,6 @@ public class ChatroomService {
     public List<Message> allMessages(Long chatroomId){
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow();
         return chatroom.getMessages();
-    }
-
-    public List<Chatroom> allRooms() {
-        return chatroomRepository.findAll();
     }
 
     public Chatroom createRoom(String userName, String roomName, boolean roomType, String password) {
@@ -58,10 +52,8 @@ public class ChatroomService {
     public Chatroom enterUser(String name, Long roomId) {
         User user = userService.getUserWithName(name);
         Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
-        Optional byUserAndChatRoom = chatroomUserRepository.findByUserAndChatroom(user, chatroom);
-        if (byUserAndChatRoom.isPresent()){
+        if (chatroomUserRepository.findByUserAndChatroom(user, chatroom).isPresent())
             return chatroom;
-        }
         chatRoomUserService.userJoinRoom(chatroom, user);
         messageService.makeWelcome(chatroom, user);
         return chatroom;
@@ -69,9 +61,8 @@ public class ChatroomService {
 
     public List<Chatroom> getRoomsWithUserJoined(String name) {
         List<Chatroom> chatrooms = chatroomRepository.findAll();
-        if(chatrooms == null){
-            return new ArrayList<>();
-        }
+        if(chatrooms.isEmpty())
+            return chatrooms;
         User user = userService.getUserWithName(name);
         List<ChatroomUser> chatroomUsers = chatroomUserRepository.findByUser(user);
         for (Chatroom chatroom : chatrooms){
@@ -85,9 +76,6 @@ public class ChatroomService {
     public boolean checkUser(String userName, Long roomId) {
         User user = userService.getUserWithName(userName);
         Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
-        Optional byUserAndChatRoom = chatroomUserRepository.findByUserAndChatroom(user, chatroom);
-        if (byUserAndChatRoom.isPresent())
-            return true;
-        return false;
+        return chatroomUserRepository.findByUserAndChatroom(user, chatroom).isPresent();
     }
 }

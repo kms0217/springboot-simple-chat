@@ -2,16 +2,16 @@ package com.ws.chat.utils;
 
 import com.ws.chat.dto.UserRequest;
 import com.ws.chat.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 @Component
+@RequiredArgsConstructor
 public class UserValidator implements Validator {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Override
     public boolean supports(Class<?> clazz) {

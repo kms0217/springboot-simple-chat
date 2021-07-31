@@ -31,12 +31,7 @@ public class Message {
     @JoinColumn(name = "chatroom_id")
     private Chatroom chatroom;
 
-    public static enum MessageType{
-        CHAT,
-        ENTER,
-        LEAVE,
-        BAN,
-        MUTE,
-        KICK
+    public enum MessageType{
+        ENTER
     }
 }

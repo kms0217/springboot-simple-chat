@@ -38,7 +38,6 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    // SignUp에서 온 UserRequest를 Site User로 변환
     public User save(UserRequest userRequest){
         User user = new User();
         user.setUsername(userRequest.getUsername());

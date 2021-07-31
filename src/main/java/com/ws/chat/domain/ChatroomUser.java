@@ -35,9 +35,8 @@ public class ChatroomUser {
         this.chatroom.addChatroomUser(this);
     }
 
-    public static enum ChatroomUserType{
+    public enum ChatroomUserType{
         OWNER,
         USER,
-        BAN
     }
 }

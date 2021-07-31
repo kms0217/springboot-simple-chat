@@ -2,7 +2,6 @@ package com.ws.chat.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-import com.ws.chat.domain.ChatroomUser;
 import lombok.*;
 
 import javax.persistence.*;

@@ -19,25 +19,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeRequests(request->{
+                .authorizeRequests(request->
                     request
                             .antMatchers("/login").permitAll()
                             .antMatchers("/error").permitAll()
                             .antMatchers("/signup/**").permitAll()
                             .antMatchers("/login-error").permitAll()
-                            .anyRequest().authenticated();
-                })
+                            .anyRequest().authenticated()
+                )
                 .formLogin(login->
                         login
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/", false)
-                                .loginProcessingUrl("/loginprocess")
+                                .loginProcessingUrl("/login")
                                 .failureUrl("/login-error")
                 );
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring()
                 .requestMatchers(
                         PathRequest.toStaticResources().atCommonLocations()

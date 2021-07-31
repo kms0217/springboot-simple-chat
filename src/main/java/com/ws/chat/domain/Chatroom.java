@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 public class Chatroom {
 
@@ -25,15 +24,11 @@ public class Chatroom {
     private String chatRoomPassword;
 
     @OneToMany(mappedBy = "chatroom")
-    @ToString.Exclude
     @JsonIgnore
-    @Builder.Default
     private List<Message> messages = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatroom")
-    @ToString.Exclude
     @JsonIgnore
-    @Builder.Default
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
 
     @Transient
@@ -45,9 +40,5 @@ public class Chatroom {
 
     public void setJoined(boolean joined){
         this.joined = joined;
-    }
-
-    public boolean getJoined(){
-        return joined;
     }
 }
