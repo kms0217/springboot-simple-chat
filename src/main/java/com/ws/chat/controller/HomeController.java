@@ -2,7 +2,7 @@ package com.ws.chat.controller;
 
 import com.ws.chat.dto.UserRequest;
 import com.ws.chat.service.UserService;
-import com.ws.chat.utils.UserValidator;
+import com.ws.chat.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package com.ws.chat.utils;
+package com.ws.chat.validator;
 
 import com.ws.chat.dto.UserRequest;
 import com.ws.chat.service.UserService;
