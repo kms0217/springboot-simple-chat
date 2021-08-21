@@ -4,6 +4,7 @@ import com.ws.chat.domain.Chatroom;
 import com.ws.chat.domain.ChatroomUser;
 import com.ws.chat.domain.Message;
 import com.ws.chat.domain.User;
+import com.ws.chat.exception.ApiException;
 import com.ws.chat.repository.ChatroomRepository;
 import com.ws.chat.repository.ChatroomUserRepository;
 import com.ws.chat.utils.SignalSender;
@@ -33,6 +34,8 @@ public class ChatroomService {
 
     public Chatroom createRoom(String userName, String roomName, boolean roomType, String password) {
         User user = userService.getUserWithName(userName);
+        if (user == null)
+            throw new ApiException("존재하지 않는 user 입니다.");
         ChatroomUser chatroomUser = new ChatroomUser();
         Chatroom chatroom = new Chatroom();
         chatroom.setRoomName(roomName);
@@ -51,6 +54,8 @@ public class ChatroomService {
 
     public Chatroom enterUser(String name, Long roomId) {
         User user = userService.getUserWithName(name);
+        if (user == null)
+            throw new ApiException("존재하지 않는 user 입니다.");
         Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
         if (chatroomUserRepository.findByUserAndChatroom(user, chatroom).isPresent())
             return chatroom;
@@ -64,6 +69,8 @@ public class ChatroomService {
         if(chatrooms.isEmpty())
             return chatrooms;
         User user = userService.getUserWithName(name);
+        if (user == null)
+            throw new ApiException("존재하지 않는 user 입니다.");
         List<ChatroomUser> chatroomUsers = chatroomUserRepository.findByUser(user);
         for (Chatroom chatroom : chatrooms){
             if (!Collections.disjoint(chatroom.getChatroomUsers(), chatroomUsers)){
@@ -75,6 +82,8 @@ public class ChatroomService {
 
     public boolean checkUser(String userName, Long roomId) {
         User user = userService.getUserWithName(userName);
+        if (user == null)
+            throw new ApiException("존재하지 않는 user 입니다.");
         Chatroom chatroom = chatroomRepository.findById(roomId).orElseThrow();
         return chatroomUserRepository.findByUserAndChatroom(user, chatroom).isPresent();
     }

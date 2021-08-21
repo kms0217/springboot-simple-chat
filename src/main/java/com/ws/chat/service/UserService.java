@@ -2,6 +2,7 @@ package com.ws.chat.service;
 
 import com.ws.chat.domain.User;
 import com.ws.chat.dto.UserRequest;
+import com.ws.chat.exception.ApiException;
 import com.ws.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -28,7 +29,9 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repository.findByUsername(username);
+        User user = repository.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("없는 User입니다.")
+        );
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return new org.springframework.security.core.userdetails.User(
@@ -47,10 +50,10 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserWithName(String userName){
-        return repository.findByUsername(userName);
+        return repository.findByUsername(userName).orElse(null);
     }
 
     public User getUserWithNickName(String nickname){
-        return repository.findByNickname(nickname);
+        return repository.findByNickname(nickname).orElse(null);
     }
 }

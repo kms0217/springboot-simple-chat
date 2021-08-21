@@ -3,6 +3,7 @@ package com.ws.chat.service;
 import com.ws.chat.domain.Chatroom;
 import com.ws.chat.domain.Message;
 import com.ws.chat.domain.User;
+import com.ws.chat.exception.ApiException;
 import com.ws.chat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -33,6 +34,8 @@ public class MessageService {
 
     public void newMessage(String userName, Message message) {
         User user = userService.getUserWithName(userName);
+        if (user == null)
+            throw new ApiException("존재하지 않는 user 입니다.");
         message.setUser(user);
         messageRepository.save(message);
         messageSendingOperations.convertAndSend(
